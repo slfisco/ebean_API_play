@@ -3,16 +3,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    @*<taskName>Title</taskName>*@
-    <script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery-3.3.1.min.js")"></script> @*doesn't actually use jquery?*@
+    @*
+    <script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery-3.3.1.min.js")"></script>
       <script>
       function parseJson() {
         var jsonString = "@jsonString";
         var json = JSON.parse(jsonString.replace(/&quot;/g,'"'));
-        var taskNamesDiv = document.getElementsByClassName("taskNames")[0];
+        var taskNamesDiv = document.getElementsByClassName("name")[0];
         for (i in json) {
             var p = document.createElement("p");
-            p.innerHTML = json[i].taskName;
+            p.innerHTML = json[i].name;
             taskNamesDiv.appendChild(p);
             var checkbox = document.createElement("input");
             checkbox.type = "checkbox";
@@ -42,16 +42,17 @@
 
         }
    </script>
+    *@
 </head>
-<body onload="parseJson()">
+@*<body onload="parseJson()">*@
 <h3>Task List</h3>
 <div class="taskNames"></div>
 <h4>Enter new task</h4>
-@helper.form(routes.ListController.httpRequestTest) {
+@helper.form(routes.RequestController.list) {
 @helper.inputText(form("taskName"), '_label -> "Task Name")
 
 <button type="submit">Add task</button>
 }
-@* @jsonString    *@
+ @jsonString
 </body>
 </html>

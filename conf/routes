@@ -7,3 +7,4 @@ GET     /list                       controllers.RequestController.list
 DELETE  /delete/:id                 controllers.RequestController.delete(id:Integer)
 GET     /getTask/:id              controllers.RequestController.getTask(id:Integer)
 POST    /createTask/:name        controllers.RequestController.createTask(name:String)
+GET     /testDisplayTasks       controllers.RequestController.testDisplayTasks

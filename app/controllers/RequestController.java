@@ -10,6 +10,10 @@ import post.PostResource;
 import play.libs.Json;
 import play.data.Form;
 import play.data.FormFactory;
+//for testing
+import play.Logger;
+import java.util.stream.Collectors;
+//end testing
 
 import java.util.List;
 
@@ -65,7 +69,12 @@ public class RequestController extends Controller {
     }
     public Result list() {
         List<Task> tasks = repository.getTasks();
-        return ok(Json.toJson(tasks.stream().map(data -> new PostResource(data.id,data.name, data.isTaskComplete))));
+        /*testing
+        Logger.error(tasks.get(0).name);
+        List<PostResource> postResourceList = tasks.stream().map(data -> new PostResource(data.id,data.name, data.isTaskComplete, link(data))).collect(Collectors.toList());
+        Logger.error(postResourceList.get(0).link);
+        end testing*/
+        return ok(Json.toJson(tasks.stream().map(data -> new PostResource(data.id,data.name, data.isTaskComplete, link(data), updateLink(data)))));
         //maps list of Task to list of postresources then converts to json
     }
     public Result delete(Integer id) {
@@ -77,5 +86,20 @@ public class RequestController extends Controller {
     }
     public Result createTask(String name) {
         return ok(repository.createTask(name).name);
+    }
+    public Result testDisplayTasks() {
+        List<Task> tasks = repository.getTasks();
+        String jsonString = Json.stringify(Json.toJson(tasks.stream().map(data -> new PostResource(data.id,data.name, data.isTaskComplete, link(data), updateLink(data)))));
+        return ok(views.html.displayTasks.render(jsonString, form));
+    }
+    public String link(Task task) {
+        //to generate link to add to PostResource
+        //hardcoding link to check functionality
+        Http.Request request = Http.Context.current().request();
+        return request.path();
+    }
+    public String updateLink(Task task) {
+        Http.Request request = Http.Context.current().request();
+        return request.host();
     }
 }
