@@ -3,17 +3,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    @*
-    <script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery-3.3.1.min.js")"></script>
-      <script>
+    <script>
       function parseJson() {
         var jsonString = "@jsonString";
         var json = JSON.parse(jsonString.replace(/&quot;/g,'"'));
-        var taskNamesDiv = document.getElementsByClassName("name")[0];
+        var taskNamesDiv = document.getElementsByClassName("taskNames")[0];
         for (i in json) {
             var p = document.createElement("p");
             p.innerHTML = json[i].name;
             taskNamesDiv.appendChild(p);
+            taskNamesDiv.appendChild(createCheckbox(i, json));
+            taskNamesDiv.appendChild(createDeleteButton(i, json));
+        }
+      }
+        function createCheckbox(i, json) {
             var checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.id = i;
@@ -27,7 +30,9 @@
             else {
                 checkbox.checked = false;
                 }
-            //adding deletion button
+            return checkbox;
+        }
+        function createDeleteButton(i, json) {
             var deleteButton = document.createElement("input");
             deleteButton.type = "button";
             deleteButton.id  = i;
@@ -36,20 +41,17 @@
             deleteButton.onclick = function(i) {
                 location.href= json[i].updateLink; //replace with delete controller call
             }.bind(this, i);
-            taskNamesDiv.appendChild(checkbox);
-            taskNamesDiv.appendChild(deleteButton);
+            return deleteButton
             }
 
-        }
    </script>
-    *@
 </head>
-@*<body onload="parseJson()">*@
+<body onload="parseJson()">
 <h3>Task List</h3>
 <div class="taskNames"></div>
 <h4>Enter new task</h4>
-@helper.form(routes.RequestController.list) {
-@helper.inputText(form("taskName"), '_label -> "Task Name")
+@helper.form(routes.HomeController.createTask) {
+@helper.inputText(form("name"), '_label -> "Task Name")
 
 <button type="submit">Add task</button>
 }

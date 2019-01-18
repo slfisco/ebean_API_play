@@ -1,10 +1,13 @@
 GET     /                           controllers.HomeController.index
-
 #GET     /rawSQL                     controllers.RequestController.rawSQL
 #GET     /updateSQL                  controllers.RequestController.updateSQL
 PUT     /updateEntity/:id           controllers.RequestController.updateEntity(id:Integer)
-GET     /list                       controllers.RequestController.list
+GET     /getTasks                       controllers.RequestController.getTasks
 DELETE  /delete/:id                 controllers.RequestController.delete(id:Integer)
 GET     /getTask/:id              controllers.RequestController.getTask(id:Integer)
-POST    /createTask/:name        controllers.RequestController.createTask(name:String)
+POST    /createTask            controllers.RequestController.createTask
 GET     /testDisplayTasks       controllers.RequestController.testDisplayTasks
+
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /testRequest            controllers.HomeController.testRequests
+GET     /createTask            controllers.HomeController.createTask

@@ -14,6 +14,9 @@ public class PostResource {
         this.link = link;
         this.updateLink = updateLink;
     }
+    public PostResource(String name) { //for creating. not sure if this is necessary
+        this.name = name;
+    }
     public Integer getId() {return id;}
     public String getName() {return name;}
     public Boolean getIsTaskComplete() {return isTaskComplete;}

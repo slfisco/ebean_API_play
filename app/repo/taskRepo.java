@@ -21,21 +21,20 @@ public class taskRepo {
         Task foundTask = ebeanServer.find(Task.class).setId(id).findOne();
         return foundTask;
     }
-    public void updateTask(Integer id, String newName, Boolean isTaskComplete) {
-        Task taskToUpdate = getTask(id);
-        taskToUpdate.setName(newName);
-        taskToUpdate.setIsTaskComplete(isTaskComplete);
-        Ebean.update(taskToUpdate);
+    public Task updateTask(Integer id, String newName, Boolean isTaskComplete) {
+        Task task = getTask(id);
+        task.setName(newName);
+        task.setIsTaskComplete(isTaskComplete);
+        Ebean.update(task);
+        return task;
     }
     public void deleteTask(Integer id) {
         Task foundTask = ebeanServer.find(Task.class).setId(id).findOne(); //find entity
         Ebean.delete(foundTask); //delete entity
     }
-    public Task createTask(String name) {
-        Task newTask = new Task();
-        newTask.setName(name);
-        newTask.setIsTaskComplete(false);
-        newTask.save();
-        return newTask;
+    public Task createTask(Task task) {
+        task.setIsTaskComplete(false);
+        task.save();
+        return task;
     }
 }

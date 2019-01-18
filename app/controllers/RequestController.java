@@ -14,6 +14,7 @@ import play.data.FormFactory;
 import play.Logger;
 import java.util.stream.Collectors;
 //end testing
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.List;
 
@@ -64,17 +65,12 @@ public class RequestController extends Controller {
     }
     */
     public Result updateEntity(Integer id) {
-        repository.updateTask(id,"newtest2", true);
-        return ok(repository.getTask(id).name);
+        Task task = repository.updateTask(id,"newtest2", true);
+        return ok(Json.toJson(new PostResource(task.id,task.name,task.isTaskComplete, link(task), updateLink(task))));
     }
-    public Result list() {
+    public Result getTasks() {
         List<Task> tasks = repository.getTasks();
-        /*testing
-        Logger.error(tasks.get(0).name);
-        List<PostResource> postResourceList = tasks.stream().map(data -> new PostResource(data.id,data.name, data.isTaskComplete, link(data))).collect(Collectors.toList());
-        Logger.error(postResourceList.get(0).link);
-        end testing*/
-        return ok(Json.toJson(tasks.stream().map(data -> new PostResource(data.id,data.name, data.isTaskComplete, link(data), updateLink(data)))));
+        return ok(Json.toJson(tasks.stream().map(task -> new PostResource(task.id,task.name, task.isTaskComplete, link(task), updateLink(task)))));
         //maps list of Task to list of postresources then converts to json
     }
     public Result delete(Integer id) {
@@ -82,24 +78,28 @@ public class RequestController extends Controller {
         return noContent();
     }
     public Result getTask(Integer id) {
-        return ok(repository.getTask(id).name);
+        Task task = repository.getTask(id);
+        return ok(Json.toJson(new PostResource(task.id,task.name,task.isTaskComplete, link(task), updateLink(task))));
     }
-    public Result createTask(String name) {
-        return ok(repository.createTask(name).name);
+    public Result createTask() {
+        //createTask should take json from body request, convert it to a Task, pass that task to repo
+        //body should have only name. the rest will be generated. name should not be in url
+        JsonNode json = request().body().asJson();
+        Task taskFromRequest = Json.fromJson(json, Task.class);
+        Task task = repository.createTask(taskFromRequest);
+        return ok(Json.toJson(new PostResource(task.id,task.name,task.isTaskComplete, link(task), updateLink(task))));
     }
-    public Result testDisplayTasks() {
+    public Result testDisplayTasks() { //not using controller.getTasks?
         List<Task> tasks = repository.getTasks();
         String jsonString = Json.stringify(Json.toJson(tasks.stream().map(data -> new PostResource(data.id,data.name, data.isTaskComplete, link(data), updateLink(data)))));
         return ok(views.html.displayTasks.render(jsonString, form));
     }
     public String link(Task task) {
-        //to generate link to add to PostResource
-        //hardcoding link to check functionality
         Http.Request request = Http.Context.current().request();
-        return request.path();
+        return request.host() + "/getTask/" + task.id; //static
     }
     public String updateLink(Task task) {
         Http.Request request = Http.Context.current().request();
-        return request.host();
+        return request.host() + "/update/" + task.id; //static
     }
 }
