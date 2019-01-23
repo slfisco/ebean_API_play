@@ -2,17 +2,16 @@ package controllers;
 
 import models.Task;
 import play.mvc.*;
-import repo.taskRepo;
+import repo.TaskDAO;
 import views.html.*;
 import javax.inject.Inject;
 import play.libs.Scala;
-import post.PostResource;
+import post.TaskDTO;
 import play.libs.Json;
 import play.data.Form;
 import play.data.FormFactory;
 //for testing
 import play.Logger;
-import java.util.stream.Collectors;
 //end testing
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -32,12 +31,12 @@ public class RequestController extends Controller {
      * this method will be called when the application receives a
      * <code>GET</code> request with a path of <code>/</code>.
      */
-    private final taskRepo repository;
+    private final TaskDAO repository;
 
     private Form<Task> form;
 
     @Inject
-    public RequestController(FormFactory formFactory,taskRepo repository) {
+    public RequestController(FormFactory formFactory, TaskDAO repository) {
         this.form = formFactory.form(Task.class);
         this.repository = repository;
     }
@@ -64,13 +63,17 @@ public class RequestController extends Controller {
         return ok("ok");
     }
     */
-    public Result updateEntity(Integer id) {
-        Task task = repository.updateTask(id,"newtest2", true);
-        return ok(Json.toJson(new PostResource(task.id,task.name,task.isTaskComplete, link(task), updateLink(task))));
+    public Result updateEntity(Integer id) { //note ID is not used
+        //updateTask should take json from body request, convert it to a Task, pass that task to repo
+        //body should have name, id, and isTaskComplete
+        JsonNode json = request().body().asJson();
+        Task taskFromRequest = Json.fromJson(json, Task.class);
+        Task task = repository.updateTask(taskFromRequest);
+        return ok(Json.toJson(new TaskDTO(task.id,task.name,task.isTaskComplete, generateLink(task,"viewLink"), generateLink(task,"updateLink"), generateLink(task,"delete"))));
     }
     public Result getTasks() {
         List<Task> tasks = repository.getTasks();
-        return ok(Json.toJson(tasks.stream().map(task -> new PostResource(task.id,task.name, task.isTaskComplete, link(task), updateLink(task)))));
+        return ok(Json.toJson(tasks.stream().map(task -> new TaskDTO(task.id,task.name, task.isTaskComplete, generateLink(task,"viewLink"), generateLink(task,"updateLink"), generateLink(task,"delete")))));
         //maps list of Task to list of postresources then converts to json
     }
     public Result delete(Integer id) {
@@ -79,27 +82,36 @@ public class RequestController extends Controller {
     }
     public Result getTask(Integer id) {
         Task task = repository.getTask(id);
-        return ok(Json.toJson(new PostResource(task.id,task.name,task.isTaskComplete, link(task), updateLink(task))));
+        return ok(Json.toJson(new TaskDTO(task.id,task.name,task.isTaskComplete, generateLink(task,"viewLink"), generateLink(task,"updateLink"), generateLink(task,"delete"))));
     }
+    /*public static Task getTaskFromId(Integer id) {
+        return repository.getTask(id);
+    }
+    */
     public Result createTask() {
         //createTask should take json from body request, convert it to a Task, pass that task to repo
         //body should have only name. the rest will be generated. name should not be in url
         JsonNode json = request().body().asJson();
         Task taskFromRequest = Json.fromJson(json, Task.class);
         Task task = repository.createTask(taskFromRequest);
-        return ok(Json.toJson(new PostResource(task.id,task.name,task.isTaskComplete, link(task), updateLink(task))));
+        return ok(Json.toJson(new TaskDTO(task.id,task.name,task.isTaskComplete, generateLink(task,"viewLink"), generateLink(task,"updateLink"), generateLink(task,"delete"))));
     }
     public Result testDisplayTasks() { //not using controller.getTasks?
         List<Task> tasks = repository.getTasks();
-        String jsonString = Json.stringify(Json.toJson(tasks.stream().map(data -> new PostResource(data.id,data.name, data.isTaskComplete, link(data), updateLink(data)))));
+        String jsonString = Json.stringify(Json.toJson(tasks.stream().map(data -> new TaskDTO(data.id,data.name, data.isTaskComplete, generateLink(data,"viewLink"), generateLink(data,"updateLink"), generateLink(data,"delete")))));
         return ok(views.html.displayTasks.render(jsonString, form));
     }
-    public String link(Task task) {
+    //could consolidate these into one method
+    public static String link(Task task) {
         Http.Request request = Http.Context.current().request();
         return request.host() + "/getTask/" + task.id; //static
     }
-    public String updateLink(Task task) {
+    public static String updateLink(Task task) {
         Http.Request request = Http.Context.current().request();
         return request.host() + "/update/" + task.id; //static
+    }
+    public static String generateLink(Task task, String linkType) {
+        Http.Request request = Http.Context.current().request();
+        return request.host() + "/" + linkType + "/" + task.id; //static
     }
 }

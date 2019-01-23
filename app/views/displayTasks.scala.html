@@ -22,6 +22,7 @@
             checkbox.id = i;
             checkbox.name = "checkbox" + String(i); //not used
             checkbox.onclick = function(i) {
+                alert("should do get request for " + json[i].updateLink);
                 location.href= json[i].updateLink;
                 }.bind(this, i); //prevent outer scope i from overwriting
             if (json[i].status == "true") { //replace with boolean
@@ -39,7 +40,7 @@
             deleteButton.name = "deleteButton" + String(i);
             deleteButton.value = "Delete Task";
             deleteButton.onclick = function(i) {
-                location.href= json[i].updateLink; //replace with delete controller call
+                location.href= "http://" + json[i].deleteLink;
             }.bind(this, i);
             return deleteButton
             }

@@ -7,11 +7,12 @@ import play.db.ebean.EbeanConfig;
 import javax.inject.Inject;
 import java.util.List;
 
-public class taskRepo {
+//should rewrite as interface implementation
+public class TaskDAO {
     private final EbeanServer ebeanServer;
 
     @Inject
-    public taskRepo(EbeanConfig ebeanConfig) {
+    public TaskDAO(EbeanConfig ebeanConfig) {
         this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
     }
     public List<Task> getTasks() {
@@ -21,10 +22,7 @@ public class taskRepo {
         Task foundTask = ebeanServer.find(Task.class).setId(id).findOne();
         return foundTask;
     }
-    public Task updateTask(Integer id, String newName, Boolean isTaskComplete) {
-        Task task = getTask(id);
-        task.setName(newName);
-        task.setIsTaskComplete(isTaskComplete);
+    public Task updateTask(Task task) {
         Ebean.update(task);
         return task;
     }
