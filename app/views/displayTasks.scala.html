@@ -22,10 +22,9 @@
             checkbox.id = i;
             checkbox.name = "checkbox" + String(i); //not used
             checkbox.onclick = function(i) {
-                alert("should do get request for " + json[i].updateLink);
-                location.href= json[i].updateLink;
+                location.href= "http://" + json[i].updateLink;
                 }.bind(this, i); //prevent outer scope i from overwriting
-            if (json[i].status == "true") { //replace with boolean
+            if (json[i].isTaskComplete == true) { //replace with boolean
                 checkbox.checked = true;
                 }
             else {
@@ -48,14 +47,19 @@
    </script>
 </head>
 <body onload="parseJson()">
-<h3>Task List</h3>
-<div class="taskNames"></div>
+
+<h1>Task List</h1>
 <h4>Enter new task</h4>
 @helper.form(routes.HomeController.createTask) {
 @helper.inputText(form("name"), '_label -> "Task Name")
 
 <button type="submit">Add task</button>
 }
+<h3>Tasks</h3>
+<div class="taskNames"></div>
+<br>
+For troubleshooting:
+<br>
  @jsonString
 </body>
 </html>

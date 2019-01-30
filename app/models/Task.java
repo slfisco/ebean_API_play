@@ -17,4 +17,5 @@ public class Task extends Model {
         this.name = name;
     }
     public void setIsTaskComplete(Boolean isTaskComplete) { this.isTaskComplete = isTaskComplete;}
+    public Integer getId() { return id; }
 }

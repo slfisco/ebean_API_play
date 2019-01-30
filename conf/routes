@@ -1,15 +1,15 @@
-GET     /                           controllers.HomeController.index
-#GET     /rawSQL                     controllers.RequestController.rawSQL
-#GET     /updateSQL                  controllers.RequestController.updateSQL
-PUT     /updateLink/:id         controllers.RequestController.updateEntity(id:Integer)
-GET     /getTasks                       controllers.RequestController.getTasks
-DELETE  /delete/:id                 controllers.RequestController.delete(id:Integer)
-GET     /getTask/:id              controllers.RequestController.getTask(id:Integer)
-POST    /createTask            controllers.RequestController.createTask
-GET     /testDisplayTasks       controllers.RequestController.testDisplayTasks
+GET     /                       controllers.HomeController.index
+GET     /assets/*file           controllers.Assets.at(path="/public", file)
 
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
-#GET     /testRequest            controllers.HomeController.testRequests
-GET     /createTask           controllers.HomeController.createTask
-GET     /delete/:id            controllers.HomeController.deleteTask(id:Integer)
+#API
+PUT     /updateLink/:id         controllers.RequestController.updateEntity(id:Integer)
+DELETE  /delete/:id             controllers.RequestController.delete(id:Integer)
+GET     /getTask/:id            controllers.RequestController.getTask(id:Integer)
+POST    /createTask             controllers.RequestController.createTask
+GET     /displayTasks           controllers.RequestController.displayTasks
+
+
+#API CALLS
+GET     /createTask             controllers.HomeController.createTask
+GET     /delete/:id             controllers.HomeController.deleteTask(id:Integer)
 GET     /updateLink/:id         controllers.HomeController.updateTask(id:Integer)
