@@ -3,28 +3,86 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script type="text/javascript" src="@routes.Assets.versioned("/javascripts/jquery-3.3.1.min.js")"></script>
     <script>
+    /*implementing ajax
+    //could make a new div for each task
+
+    //create button should load new div based on return of RequestController.createTask
+    //need to post form data. this seems like a lot of javascript
+
+    //post request then based on create text node, checkbox, delete button
+
+    //need function to create taskList on pageLoad
+
+    //other option: create javascript reload function. have ajax return all tasks in json.
+    //  go through list and if ID exists
+    current structure:
+    form
+    div taskNames
+    paragraphs: number, name, checkbox, delete button
+
+    could make button start ajax delete call and delete that section
+    */
+    //new ajax delete button
+    //runs homecontroller.deleteTask
+    function deleteAjax(url,i) { //i might be confusing
+        $.get(url, function() {
+            var divNode = document.getElementById("taskNames");
+            divNode.removeChild(document.getElementById(i));
+                                  }
+                                  );
+    }
+    //new ajax update button
+    function updateAjax(url) {
+        $.get(url);
+     }
+
+     //new ajax create button
+     /* need to send form data to createTask along with url
+
+     */
+     function createAjax() {
+        $.get("http://localhost:9000/createTask/" + document.createTaskForm.name.value, function() { //hardcoded path for testing
+            alert("this should have added task after refresh");
+            }
+            );
+        return false;
+     }
+
+    //function to run
       function parseJson() {
         var jsonString = "@jsonString";
         var json = JSON.parse(jsonString.replace(/&quot;/g,'"'));
-        var taskNamesDiv = document.getElementsByClassName("taskNames")[0];
+        var taskNamesDiv = document.getElementById("taskNames");
         for (i in json) {
             var p = document.createElement("p");
-            p.innerHTML = json[i].name;
+            p.id = i;
+            var taskName = document.createTextNode(i + ") " + json[i].name)
+            p.appendChild(taskName);
+            var checkbox = createCheckbox(i, json);
+            p.appendChild(document.createElement("br"));
+            p.appendChild(checkbox);
+            if (checkbox.checked) {
+                p.appendChild(document.createTextNode("complete"));
+                p.appendChild(document.createElement("br"));
+            }
+            else {
+                p.appendChild(document.createTextNode("incomplete"));
+                p.appendChild(document.createElement("br"));
+            }
+            p.appendChild(createDeleteButton(i, json));
+            p.appendChild(document.createElement("br"));
             taskNamesDiv.appendChild(p);
-            taskNamesDiv.appendChild(createCheckbox(i, json));
-            taskNamesDiv.appendChild(createDeleteButton(i, json));
         }
       }
         function createCheckbox(i, json) {
             var checkbox = document.createElement("input");
             checkbox.type = "checkbox";
-            checkbox.id = i;
-            checkbox.name = "checkbox" + String(i); //not used
             checkbox.onclick = function(i) {
-                location.href= "http://" + json[i].updateLink;
+                updateAjax(json[i].updateLink);
                 }.bind(this, i); //prevent outer scope i from overwriting
-            if (json[i].isTaskComplete == true) { //replace with boolean
+            if (json[i].isTaskComplete == true) {
                 checkbox.checked = true;
                 }
             else {
@@ -35,11 +93,9 @@
         function createDeleteButton(i, json) {
             var deleteButton = document.createElement("input");
             deleteButton.type = "button";
-            deleteButton.id  = i;
-            deleteButton.name = "deleteButton" + String(i);
             deleteButton.value = "Delete Task";
             deleteButton.onclick = function(i) {
-                location.href= "http://" + json[i].deleteLink;
+                deleteAjax(json[i].deleteLink, i);
             }.bind(this, i);
             return deleteButton
             }
@@ -50,13 +106,18 @@
 
 <h1>Task List</h1>
 <h4>Enter new task</h4>
-@helper.form(routes.HomeController.createTask) {
+@* @helper.form(routes.HomeController.createTask) {
 @helper.inputText(form("name"), '_label -> "Task Name")
-
 <button type="submit">Add task</button>
-}
+} *@
+@* NEW FORM *@
+<form name=createTaskForm onsubmit="return createAjax()">
+    Enter New Task: <br>
+    <input type="text" name="name">
+    <input type="submit" value="Add Task">
+</form>
 <h3>Tasks</h3>
-<div class="taskNames"></div>
+<div id="taskNames"></div>
 <br>
 For troubleshooting:
 <br>

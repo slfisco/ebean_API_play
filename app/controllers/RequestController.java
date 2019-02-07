@@ -59,7 +59,7 @@ public class RequestController extends Controller {
         return ok(Json.toJson(convertToDTO(task)));
     }
 
-    public Result createTask() {
+    public Result createTask(String name) { //string not used
         //createTask should take json from body request, convert it to a Task, pass that task to repo
         //body should have only name. the rest will be generated. name should not be in url
         JsonNode json = request().body().asJson();
@@ -78,7 +78,8 @@ public class RequestController extends Controller {
 
     public static String generateLink(Task task, String linkType) {
         Http.Request request = Http.Context.current().request();
-        return request.host() + "/" + linkType + "/" + task.id; //static
+        String protocol = (request.secure()) ? ("https://") : ("http://");
+        return protocol + request.host() + "/" + linkType + "/" + task.id; //static
     }
     public static TaskDTO convertToDTO(Task task) {
         return new TaskDTO(task.id,task.name,task.isTaskComplete, generateLink(task,"getTask"), generateLink(task,"updateLink"), generateLink(task,"delete"));

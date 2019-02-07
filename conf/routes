@@ -1,15 +1,15 @@
 GET     /                       controllers.HomeController.index
-GET     /assets/*file           controllers.Assets.at(path="/public", file)
+GET     /assets/*file           controllers.Assets.versioned(path="/public", file: Asset)
 
 #API
 PUT     /updateLink/:id         controllers.RequestController.updateEntity(id:Integer)
 DELETE  /delete/:id             controllers.RequestController.delete(id:Integer)
 GET     /getTask/:id            controllers.RequestController.getTask(id:Integer)
-POST    /createTask             controllers.RequestController.createTask
+POST    /createTask/:name       controllers.RequestController.createTask(name:String)
 GET     /displayTasks           controllers.RequestController.displayTasks
 
 
 #API CALLS
-GET     /createTask             controllers.HomeController.createTask
+GET     /createTask/:name       controllers.HomeController.createTask(name:String)
 GET     /delete/:id             controllers.HomeController.deleteTask(id:Integer)
 GET     /updateLink/:id         controllers.HomeController.updateTask(id:Integer)
