@@ -39,17 +39,21 @@ public class HomeController extends Controller implements WSBodyReadables, WSBod
         Logger.error("name from form " + formData.name);
         Http.Request request = Http.Context.current().request();
         String protocol = (request.secure()) ? ("https://") : ("http://");
-        Logger.error(protocol + request.host() + request.uri());
-        CompletionStage<WSResponse> response = ws.url(protocol + request.host() + request.uri())
+        String url = protocol + request.host() + request.uri();
+        Logger.error("ajax url call: " + url);
+        String newUrl = url.substring(0,url.lastIndexOf('/')); //may cause issue if character not found
+        Logger.error("createTask url call: " + newUrl);
+        CompletionStage<WSResponse> response = ws.url(newUrl)
                 .addHeader("Content-Type", "application/json")
                 .post(Json.toJson(formData));
+            JsonNode json = null;
         try {
-            response.toCompletableFuture().get();
+            json = response.toCompletableFuture().get().getBody(json());
         }
         catch (Exception e) {
             Logger.error("Failed to finish transaction");
         }
-        return redirect(controllers.routes.RequestController.displayTasks());
+        return ok(json);
     }
     public Result deleteTask(Integer id) {
         Http.Request request = Http.Context.current().request();
@@ -73,12 +77,13 @@ public class HomeController extends Controller implements WSBodyReadables, WSBod
         CompletionStage<WSResponse> response = ws.url(protocol + request.host() + request.uri())
                 .addHeader("Content-Type", "application/json")
                 .put(Json.toJson(task));
+        JsonNode json = null;
         try {
-            response.toCompletableFuture().get();
+            json = response.toCompletableFuture().get().getBody(json());
         }
         catch (Exception e) {
             Logger.error("Failed to finish transaction");
         }
-        return redirect(controllers.routes.RequestController.displayTasks());
+        return ok(json);
     }
 }

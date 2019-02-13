@@ -5,7 +5,7 @@ GET     /assets/*file           controllers.Assets.versioned(path="/public", fil
 PUT     /updateLink/:id         controllers.RequestController.updateEntity(id:Integer)
 DELETE  /delete/:id             controllers.RequestController.delete(id:Integer)
 GET     /getTask/:id            controllers.RequestController.getTask(id:Integer)
-POST    /createTask/:name       controllers.RequestController.createTask(name:String)
+POST    /createTask             controllers.RequestController.createTask
 GET     /displayTasks           controllers.RequestController.displayTasks
 
 

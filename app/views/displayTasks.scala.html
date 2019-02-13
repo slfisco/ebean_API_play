@@ -1,41 +1,35 @@
 @(jsonString: String, form: Form[Task])
+
+@helper.javascriptRouter("jsRoutes")(
+    routes.javascript.HomeController.createTask
+)
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <script type="text/javascript" src="@routes.Assets.versioned("/javascripts/jquery-3.3.1.min.js")"></script>
     <script>
-    /*implementing ajax
-    //could make a new div for each task
 
-    //create button should load new div based on return of RequestController.createTask
-    //need to post form data. this seems like a lot of javascript
 
-    //post request then based on create text node, checkbox, delete button
-
-    //need function to create taskList on pageLoad
-
-    //other option: create javascript reload function. have ajax return all tasks in json.
-    //  go through list and if ID exists
-    current structure:
-    form
-    div taskNames
-    paragraphs: number, name, checkbox, delete button
-
-    could make button start ajax delete call and delete that section
-    */
-    //new ajax delete button
-    //runs homecontroller.deleteTask
-    function deleteAjax(url,i) { //i might be confusing
+    function deleteAjax(url, id) {
         $.get(url, function() {
             var divNode = document.getElementById("taskNames");
-            divNode.removeChild(document.getElementById(i));
+            divNode.removeChild(document.getElementById(id));
                                   }
                                   );
     }
     //new ajax update button
-    function updateAjax(url) {
-        $.get(url);
+    function updateAjax(url, id) {
+        $.get(url, function(data) {
+            var status = document.getElementById("status_of_" + id);
+            if (data.isTaskComplete) {
+                status.textContent = "complete";
+            }
+            else {
+                status.textContent = "incomplete";
+            }
+        }
+        );
      }
 
      //new ajax create button
@@ -43,8 +37,9 @@
 
      */
      function createAjax() {
-        $.get("http://localhost:9000/createTask/" + document.createTaskForm.name.value, function() { //hardcoded path for testing
-            alert("this should have added task after refresh");
+        $.get(jsRoutes.controllers.HomeController.createTask(document.createTaskForm.name.value).absoluteURL(), function(data) {
+            var taskNamesDiv = document.getElementById("taskNames");
+            taskNamesDiv.appendChild(createParagraph(data));
             }
             );
         return false;
@@ -56,33 +51,17 @@
         var json = JSON.parse(jsonString.replace(/&quot;/g,'"'));
         var taskNamesDiv = document.getElementById("taskNames");
         for (i in json) {
-            var p = document.createElement("p");
-            p.id = i;
-            var taskName = document.createTextNode(i + ") " + json[i].name)
-            p.appendChild(taskName);
-            var checkbox = createCheckbox(i, json);
-            p.appendChild(document.createElement("br"));
-            p.appendChild(checkbox);
-            if (checkbox.checked) {
-                p.appendChild(document.createTextNode("complete"));
-                p.appendChild(document.createElement("br"));
-            }
-            else {
-                p.appendChild(document.createTextNode("incomplete"));
-                p.appendChild(document.createElement("br"));
-            }
-            p.appendChild(createDeleteButton(i, json));
-            p.appendChild(document.createElement("br"));
-            taskNamesDiv.appendChild(p);
+            taskNamesDiv.appendChild(createParagraph(json[i]));
         }
       }
-        function createCheckbox(i, json) {
+        function createCheckbox(json) {
             var checkbox = document.createElement("input");
             checkbox.type = "checkbox";
-            checkbox.onclick = function(i) {
-                updateAjax(json[i].updateLink);
-                }.bind(this, i); //prevent outer scope i from overwriting
-            if (json[i].isTaskComplete == true) {
+            checkbox.id = "checkbox_" + json.id
+            checkbox.onclick = function() {
+                updateAjax(json.updateLink, json.id);
+                }
+            if (json.isTaskComplete == true) {
                 checkbox.checked = true;
                 }
             else {
@@ -90,14 +69,41 @@
                 }
             return checkbox;
         }
-        function createDeleteButton(i, json) {
+        function createDeleteButton(json) {
             var deleteButton = document.createElement("input");
             deleteButton.type = "button";
             deleteButton.value = "Delete Task";
-            deleteButton.onclick = function(i) {
-                deleteAjax(json[i].deleteLink, i);
-            }.bind(this, i);
+            deleteButton.onclick = function() {
+                deleteAjax(json.deleteLink, json.id);
+            }
             return deleteButton
+            }
+        function createParagraph(json) {
+            var p = document.createElement("p");
+            p.id = json.id;
+            var taskName = document.createTextNode(json.name);
+            p.appendChild(taskName);
+            var checkbox = createCheckbox(json);
+            p.appendChild(document.createElement("br"));
+            p.appendChild(checkbox);
+            if (checkbox.checked) {
+                var status = document.createElement("div");
+                status.id = "status_of_" + json.id;
+                status.textContent = "complete";
+                p.appendChild(status);
+                p.appendChild(document.createElement("br"));
+            }
+            else {
+                var status = document.createElement("div");
+                status.id = "status_of_" + json.id;
+                status.textContent = "incomplete";
+                p.appendChild(status);
+                p.appendChild(document.createElement("br"));
+            }
+
+            p.appendChild(createDeleteButton(json));
+            p.appendChild(document.createElement("br"));
+            return p
             }
 
    </script>
@@ -106,11 +112,7 @@
 
 <h1>Task List</h1>
 <h4>Enter new task</h4>
-@* @helper.form(routes.HomeController.createTask) {
-@helper.inputText(form("name"), '_label -> "Task Name")
-<button type="submit">Add task</button>
-} *@
-@* NEW FORM *@
+
 <form name=createTaskForm onsubmit="return createAjax()">
     Enter New Task: <br>
     <input type="text" name="name">
