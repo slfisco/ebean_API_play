@@ -27,12 +27,8 @@ public class HomeController extends Controller implements WSBodyReadables, WSBod
         this.form = formFactory.form(Task.class);
         this.repository = repository;
     }
-    public Result index() {
-        return ok(views.html.index.render());
-    }
 
     public Result createTask(String name) {
-        //final Form<Task> boundForm = form.bindFromRequest();
         Task formData = new Task();
         formData.setName(name);
         formData.setIsTaskComplete(false);
@@ -66,7 +62,7 @@ public class HomeController extends Controller implements WSBodyReadables, WSBod
         catch (Exception e) {
             Logger.error("Failed to finish transaction");
         }
-        return redirect(controllers.routes.RequestController.displayTasks());
+        return noContent();
     }
     public Result updateTask(Integer id) {
         Task task = repository.getTask(id);

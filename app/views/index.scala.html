@@ -1,11 +1,21 @@
-@()
+@(form: Form[Account])
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Index page.</title>
+    <title>Login page</title>
 </head>
 <body>
-Hello. Go to /displayTasks to see task list
+Welcome to login page.
+@helper.form(routes.LoginController.authenticate) {
+@helper.inputText(form("username"))
+@helper.inputText(form("password"))
+<button type="submit">Log in</button>
+}
+@if(flash.contains("status")) {
+<p class="status">
+    @flash.get("status")
+</p>
+}
 </body>
 </html>

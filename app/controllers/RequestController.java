@@ -1,5 +1,6 @@
 package controllers;
 
+import models.Account; //testing account
 import models.Task;
 import play.mvc.*;
 import repo.TaskDAO;
@@ -20,17 +21,10 @@ import java.util.Comparator;
 import io.ebean.*;
 
 /**
- * This controller contains an action to handle HTTP requests
- * to the application's home page.
+This controller handles httprequests
  */
 public class RequestController extends Controller {
 
-    /**
-     * An action that renders an HTML page with a welcome message.
-     * The configuration in the <code>routes</code> file means that
-     * this method will be called when the application receives a
-     * <code>GET</code> request with a path of <code>/</code>.
-     */
     private final TaskDAO repository;
 
     private Form<Task> form;
@@ -47,7 +41,7 @@ public class RequestController extends Controller {
         JsonNode json = request().body().asJson();
         Task taskFromRequest = Json.fromJson(json, Task.class);
         Task task = repository.updateTask(taskFromRequest);
-        return ok(Json.toJson(convertToDTO(task)));
+        return ok(Json.toJson(Helper.convertToDTO(task)));
     }
 
     public Result delete(Integer id) {
@@ -56,7 +50,7 @@ public class RequestController extends Controller {
     }
     public Result getTask(Integer id) {
         Task task = repository.getTask(id);
-        return ok(Json.toJson(convertToDTO(task)));
+        return ok(Json.toJson(Helper.convertToDTO(task)));
     }
 
     public Result createTask() { //string not used
@@ -65,24 +59,14 @@ public class RequestController extends Controller {
         JsonNode json = request().body().asJson();
         Task taskFromRequest = Json.fromJson(json, Task.class);
         Task task = repository.createTask(taskFromRequest);
-        return ok(Json.toJson(convertToDTO(task)));
+        return ok(Json.toJson(Helper.convertToDTO(task)));
     }
     public Result displayTasks() {
         //rewrite to return json only and have homecontroller make http request
         //can then remove form from this controller
         List<Task> tasks = repository.getTasks();
         Collections.sort(tasks, Comparator.comparing(Task::getId));
-        String jsonString = Json.stringify(Json.toJson(tasks.stream().map(data -> convertToDTO(data))));
+        String jsonString = Json.stringify(Json.toJson(tasks.stream().map(data -> Helper.convertToDTO(data))));
         return ok(views.html.displayTasks.render(jsonString, form));
     }
-
-    public static String generateLink(Task task, String linkType) {
-        Http.Request request = Http.Context.current().request();
-        String protocol = (request.secure()) ? ("https://") : ("http://");
-        return protocol + request.host() + "/" + linkType + "/" + task.id; //static
-    }
-    public static TaskDTO convertToDTO(Task task) {
-        return new TaskDTO(task.id,task.name,task.isTaskComplete, generateLink(task,"getTask"), generateLink(task,"updateLink"), generateLink(task,"delete"));
-    }
-
 }
