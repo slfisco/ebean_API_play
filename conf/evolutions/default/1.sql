@@ -10,14 +10,14 @@ create table account (
 );
 
 create table task (
-  id                            serial not null,
+  id                            integer auto_increment not null,
   name                          varchar(255),
   is_task_complete              boolean,
   constraint pk_task primary key (id)
 );
 
 create table person (
-  id                            serial not null,
+  id                            integer auto_increment not null,
   name                          varchar(255),
   constraint pk_person primary key (id)
 );
@@ -25,9 +25,9 @@ create table person (
 
 # --- !Downs
 
-drop table if exists account cascade;
+drop table if exists account;
 
-drop table if exists task cascade;
+drop table if exists task;
 
-drop table if exists person cascade;
+drop table if exists person;
 
