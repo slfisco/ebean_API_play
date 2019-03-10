@@ -53,7 +53,7 @@ public class RequestController extends Controller {
         return ok(Json.toJson(Helper.convertToDTO(task)));
     }
 
-    public Result createTask() { //string not used
+    public Result createTask() {
         //createTask should take json from body request, convert it to a Task, pass that task to repo
         //body should have only name. the rest will be generated. name should not be in url
         JsonNode json = request().body().asJson();
