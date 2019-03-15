@@ -11,6 +11,6 @@ public class Helper {
         return protocol + request.host() + "/" + linkType + "/" + task.id; //static
     }
     public static TaskDTO convertToDTO(Task task) {
-        return new TaskDTO(task.id,task.name,task.isTaskComplete, generateLink(task,"getTask"), generateLink(task,"updateLink"), generateLink(task,"delete"));
+        return new TaskDTO(task.id,task.name,task.isTaskComplete, task.accountName, generateLink(task,"getTask"), generateLink(task,"updateLink"), generateLink(task,"delete"));
     }
 }

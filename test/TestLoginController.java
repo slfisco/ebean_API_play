@@ -84,7 +84,7 @@ public class TestLoginController {
                         "create table account (username varchar(255), password varchar(255)," +
                                 "constraint pk_account primary key (username));" +
                                 "insert into account (username,password)" +
-                                "values ('name1', 'pass1');",
+                                "values ('testLoginName', 'pass1');",
                         "drop table if exists account cascade;"))
         );
         Logger.error(fakeApp.getClass().getName());
@@ -92,7 +92,7 @@ public class TestLoginController {
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(GET)
                 .uri(controllers.routes.LoginController.authenticate().url())
-                .bodyForm(ImmutableMap.of("username","name1", "password", "pass1"));
+                .bodyForm(ImmutableMap.of("username","testLoginName", "password", "pass1"));
         Result result = route(fakeApp, request);
         Logger.error("displayTasks url: " + controllers.routes.LoginController.displayTasks().url());
         Logger.error("redirectLocation url: " + result.redirectLocation().get());

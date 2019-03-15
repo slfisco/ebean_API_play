@@ -34,6 +34,7 @@ public class HomeController extends Controller implements WSBodyReadables, WSBod
         formData.setIsTaskComplete(false);
         Logger.error("name from form " + formData.name);
         Http.Request request = Http.Context.current().request();
+        formData.setAccountName(session("username")); //should set account by httprequest
         String protocol = (request.secure()) ? ("https://") : ("http://");
         String url = protocol + request.host() + request.uri();
         Logger.error("ajax url call: " + url);

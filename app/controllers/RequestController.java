@@ -61,6 +61,7 @@ public class RequestController extends Controller {
         Task task = repository.createTask(taskFromRequest);
         return ok(Json.toJson(Helper.convertToDTO(task)));
     }
+    /*
     public Result displayTasks() {
         //rewrite to return json only and have homecontroller make http request
         //can then remove form from this controller
@@ -69,4 +70,5 @@ public class RequestController extends Controller {
         String jsonString = Json.stringify(Json.toJson(tasks.stream().map(data -> Helper.convertToDTO(data))));
         return ok(views.html.displayTasks.render(jsonString, form));
     }
+    */
 }
