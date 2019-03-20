@@ -60,8 +60,8 @@ public class LoginController extends Controller {
     }
     @Security.Authenticated(Secured.class)
     public Result displayTasks() {
-        Account formLogin = loginForm.bindFromRequest().get();
-        List<Task> tasks = taskRepository.getTasks();
+        Logger.error("username: " + session("username"));
+        List<Task> tasks = taskRepository.getTasks(session("username"));
         Collections.sort(tasks, Comparator.comparing(Task::getId));
         String jsonString = Json.stringify(Json.toJson(tasks.stream().map(data -> Helper.convertToDTO(data))));
         return ok(views.html.displayTasks.render(jsonString, taskForm));
