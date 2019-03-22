@@ -3,6 +3,7 @@ package models;
 import io.ebean.*;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import org.mindrot.jbcrypt.BCrypt;
 
 @Entity
 //@Sql

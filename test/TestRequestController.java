@@ -41,6 +41,7 @@ public class TestRequestController {
                                 "id integer auto_increment not null," +
                                 "name varchar(255)," +
                                 "is_task_complete boolean," +
+                                "account_name varchar(255)," +
                                 "constraint pk_task primary key (id));",
                         "drop table if exists task cascade;"))
         );
@@ -49,6 +50,7 @@ public class TestRequestController {
         Task task = new Task();
         task.name = "newTask";
         task.isTaskComplete = false;
+        task.accountName = "testaccount";
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(POST)
                 .uri(controllers.routes.RequestController.createTask().url())
@@ -75,9 +77,10 @@ public class TestRequestController {
                                 "id integer auto_increment not null," +
                                 "name varchar(255)," +
                                 "is_task_complete boolean," +
+                                "account_name varchar(255)," +
                                 "constraint pk_task primary key (id));" +
-                                "INSERT INTO task(id,name,is_task_complete)" +
-                                "VALUES (1,'taskToUpdate',false)",
+                                "INSERT INTO task(id,name,is_task_complete,account_name)" +
+                                "VALUES (1,'taskToUpdate',false,'testaccount')",
                         "drop table if exists task cascade;"))
         );
         Logger.error(fakeApp.getClass().getName());
@@ -86,6 +89,7 @@ public class TestRequestController {
         task.id = 1;
         task.name = "taskToUpdate";
         task.isTaskComplete = true;
+        task.accountName = "testaccount";
         Http.RequestBuilder request = Helpers.fakeRequest()
                 .method(PUT)
                 .uri(controllers.routes.RequestController.updateEntity(1).url())
@@ -112,9 +116,10 @@ public class TestRequestController {
                                 "id integer auto_increment not null," +
                                 "name varchar(255)," +
                                 "is_task_complete boolean," +
+                                "account_name varchar(255)," +
                                 "constraint pk_task primary key (id));" +
-                                "INSERT INTO task(id,name,is_task_complete)" +
-                                "VALUES (1,'taskToDelete',false),(2,'otherTask',false);",
+                                "INSERT INTO task(id,name,is_task_complete,account_name)" +
+                                "VALUES (1,'taskToDelete',false,'testaccount'),(2,'otherTask',false,'testaccount');",
                         "drop table if exists task cascade;"))
         );
         Logger.error(fakeApp.getClass().getName());

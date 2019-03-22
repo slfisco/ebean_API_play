@@ -32,14 +32,11 @@ public class HomeController extends Controller implements WSBodyReadables, WSBod
         Task formData = new Task();
         formData.setName(name);
         formData.setIsTaskComplete(false);
-        Logger.error("name from form " + formData.name);
         Http.Request request = Http.Context.current().request();
         formData.setAccountName(session("username")); //should set account by httprequest
         String protocol = (request.secure()) ? ("https://") : ("http://");
         String url = protocol + request.host() + request.uri();
-        Logger.error("ajax url call: " + url);
         String newUrl = url.substring(0,url.lastIndexOf('/')); //may cause issue if character not found
-        Logger.error("createTask url call: " + newUrl);
         CompletionStage<WSResponse> response = ws.url(newUrl)
                 .addHeader("Content-Type", "application/json")
                 .post(Json.toJson(formData));

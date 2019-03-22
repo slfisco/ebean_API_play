@@ -9,6 +9,8 @@ POST    /createTask             controllers.RequestController.createTask
 GET     /displayTasks           controllers.LoginController.displayTasks
 GET     /testAccounts           controllers.LoginController.authenticate
 GET     /logOut                 controllers.LoginController.logOut
+GET     /signUp                 controllers.LoginController.renderNewAccountPage
+GET     /signUp/createAccount   controllers.LoginController.createAccount
 
 
 #API CALLS

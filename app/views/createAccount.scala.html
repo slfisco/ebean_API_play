@@ -3,16 +3,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login page</title>
+    <title>Create Account</title>
 </head>
 <body>
-Welcome to login page.
-@helper.form(routes.LoginController.authenticate) {
+Enter username and password to create account.
+@helper.form(routes.LoginController.createAccount) {
 @helper.inputText(form("username"))
 @helper.inputText(form("password"))
 <button type="submit">Log in</button>
 }
-<button onclick="location.href='@controllers.routes.LoginController.renderNewAccountPage';">Sign up</button>
 @if(flash.contains("status")) {
 <p class="status">
     @flash.get("status")

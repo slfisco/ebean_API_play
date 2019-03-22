@@ -50,7 +50,7 @@ public class LoginController extends Controller {
         if (accountRepository.accountIsValid(formLogin)) {
             session().clear();
             session("username", formLogin.username);
-            Logger.error("account is valid");
+            Logger.error("Account is valid. Redirecting to main page.");
             return redirect(routes.LoginController.displayTasks());
         }
         else {
@@ -60,15 +60,31 @@ public class LoginController extends Controller {
     }
     @Security.Authenticated(Secured.class)
     public Result displayTasks() {
-        Logger.error("username: " + session("username"));
-        List<Task> tasks = taskRepository.getTasks(session("username"));
+        String username = session("username");
+        Logger.error("Rendering task list for " + username);
+        List<Task> tasks = taskRepository.getTasks(username);
         Collections.sort(tasks, Comparator.comparing(Task::getId));
         String jsonString = Json.stringify(Json.toJson(tasks.stream().map(data -> Helper.convertToDTO(data))));
-        return ok(views.html.displayTasks.render(jsonString, taskForm));
+        return ok(views.html.displayTasks.render(jsonString, taskForm, username));
     }
     public Result logOut() {
         session().clear();
         flash("status", "You have been logged out.");
         return redirect(routes.LoginController.index());
     }
+    public Result createAccount() {
+        Account formLogin = loginForm.bindFromRequest().get();
+        if (accountRepository.usernameIsUnique(formLogin)) {
+            accountRepository.createAccount(formLogin);
+            session().clear();
+            session("username", formLogin.username);
+            Logger.error("Account has been created. Redirecting to main page.");
+            return redirect(routes.LoginController.displayTasks());
+        }
+        else {
+            flash("status", "That username is already taken. Please choose another.");
+            return redirect(routes.LoginController.renderNewAccountPage());
+        }
+    }
+    public Result renderNewAccountPage() { return ok(views.html.createAccount.render(loginForm)); }
 }

@@ -24,55 +24,10 @@ import models.Account;
 import play.db.ebean.EbeanConfig;
 
 import javax.inject.Inject;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class TestLoginController {
     Database database;
-
-    /*
-    @Test
-    public void h2dbTest() {
-        //creates h2 database and manually applies evolution to it
-        database = Databases.inMemory();
-        Logger.error(database.getName());
-        Evolutions.applyEvolutions(database, Evolutions.forDefault(
-                new Evolution(1,
-                        "create table account (username varchar(255), password varchar(255)," +
-                        "constraint pk_account primary key (username));" +
-                        "insert into account (username,password)" +
-                        "values ('newuser', 'newpassword');",
-                        "drop table if exists account cascade;"))
-        );
-        Connection connection = database.getConnection();
-        try {
-            //instead of using evolutions could just do sql statement
-            *//*connection.prepareStatement(
-                    "create table test (" +
-                    "  id                            int not null," +
-                    "  name                          varchar(255)," +
-                    "  constraint pk_test primary key (id)" +
-                    ");" +
-                            "insert into test (id,name)" +
-                    "values (1, 'doodles');").execute();
-            Logger.error("executed successfully");
-            *//*
-
-            ResultSet resultSet = connection.prepareStatement("select * from account").executeQuery();
-            while (resultSet.next()) {
-                Logger.error(resultSet.getString("username"));
-                Logger.error(resultSet.getString("password"));
-            }
-            Logger.error("generated resultSet");
-
-        }
-        catch (Exception e) {
-            Logger.error(e.getMessage());
-        }
-        Evolutions.cleanupEvolutions(database);
-        database.shutdown();
-        assertEquals(1, 1);
-    }
-    */
-
 
     //could use @Before or @BeforeClass to reduce boilerplate
     @Test
@@ -84,7 +39,7 @@ public class TestLoginController {
                         "create table account (username varchar(255), password varchar(255)," +
                                 "constraint pk_account primary key (username));" +
                                 "insert into account (username,password)" +
-                                "values ('testLoginName', 'pass1');",
+                                "values ('testLoginName','" + BCrypt.hashpw("pass1", BCrypt.gensalt()) + "');",
                         "drop table if exists account cascade;"))
         );
         Logger.error(fakeApp.getClass().getName());

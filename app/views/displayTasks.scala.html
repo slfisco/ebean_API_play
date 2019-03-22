@@ -1,4 +1,4 @@
-@(jsonString: String, form: Form[Task])
+@(jsonString: String, form: Form[Task],username: String)
 
 @helper.javascriptRouter("jsRoutes")(
     routes.javascript.HomeController.createTask
@@ -111,6 +111,7 @@
 <body onload="parseJson()">
 
 <h1>Task List</h1>
+<h4>Logged in as: @username</h4>
 <button onclick="location.href='@controllers.routes.LoginController.logOut';">Log out</button>
 <h4>Enter new task</h4>
 
