@@ -9,8 +9,8 @@
 Enter username and password to create account.
 @helper.form(routes.LoginController.createAccount) {
 @helper.inputText(form("username"))
-@helper.inputText(form("password"))
-<button type="submit">Log in</button>
+@helper.inputPassword(form("password"))
+<button type="submit">Create Account</button>
 }
 @if(flash.contains("status")) {
 <p class="status">

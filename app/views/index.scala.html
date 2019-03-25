@@ -9,7 +9,7 @@
 Welcome to login page.
 @helper.form(routes.LoginController.authenticate) {
 @helper.inputText(form("username"))
-@helper.inputText(form("password"))
+@helper.inputPassword(form("password"))
 <button type="submit">Log in</button>
 }
 <button onclick="location.href='@controllers.routes.LoginController.renderNewAccountPage';">Sign up</button>

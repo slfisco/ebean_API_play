@@ -1,6 +1,5 @@
 package controllers;
 
-import controllers.Helper;
 import models.Account; //testing account
 import models.Task;
 import repo.AccountDAO;
@@ -9,17 +8,16 @@ import repo.TaskDAO;
 import views.html.*;
 import javax.inject.Inject;
 import play.libs.Scala;
-import post.TaskDTO;
 import play.libs.Json;
 import play.data.Form;
 import play.data.FormFactory;
 import play.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
-import controllers.RequestController.*;
 
 import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
+import repo.AccountDAO.accountValidationResult;
 
 import io.ebean.*;
 
@@ -47,7 +45,7 @@ public class LoginController extends Controller {
 
     public Result authenticate() {
         Account formLogin = loginForm.bindFromRequest().get();
-        if (accountRepository.accountIsValid(formLogin)) {
+        if (accountRepository.loginIsValid(formLogin)) {
             session().clear();
             session("username", formLogin.username);
             Logger.error("Account is valid. Redirecting to main page.");
@@ -74,7 +72,8 @@ public class LoginController extends Controller {
     }
     public Result createAccount() {
         Account formLogin = loginForm.bindFromRequest().get();
-        if (accountRepository.usernameIsUnique(formLogin)) {
+        accountValidationResult validationResult = accountRepository.newAccountIsValid(formLogin);
+        if (validationResult.isSuccess) {
             accountRepository.createAccount(formLogin);
             session().clear();
             session("username", formLogin.username);
@@ -82,7 +81,7 @@ public class LoginController extends Controller {
             return redirect(routes.LoginController.displayTasks());
         }
         else {
-            flash("status", "That username is already taken. Please choose another.");
+            flash("status", validationResult.errorMessage);
             return redirect(routes.LoginController.renderNewAccountPage());
         }
     }
